@@ -38,7 +38,7 @@ cache:
 edge:
   hostedZoneId: ""
   hostedZoneName: ""
-  cloudFront: true
+  cloudFront: false
   customDomainDriver: manual
   waf: true
 

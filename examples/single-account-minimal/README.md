@@ -15,7 +15,8 @@ Edit `authn.config.yaml` first to set:
 
 - `appUrl` — the URL operators will hit (e.g. `https://authn.example.com`)
 - `defaultFromEmail` — sender for transactional email
-- `edge.hostedZoneId` / `edge.hostedZoneName` — your Route 53 hosted zone for the domain
+- `edge.hostedZoneId` / `edge.hostedZoneName` — your Route 53 hosted zone for the domain (only needed if you want auto-DNS records)
+- `edge.cloudFront` — defaults to `false` so `cdk synth` works without a hosted zone. Flip to `true` (and provide `hostedZoneId`) once you're ready to put CloudFront in front and have the wildcard cert auto-provisioned.
 - `secrets.values.APP_KEY` — generate with `openssl rand -base64 32 | sed 's/^/base64:/'`
 - `secrets.values.AUTHN_BOOTSTRAP_ADMIN_EMAIL` / `AUTHN_BOOTSTRAP_ADMIN_PASSWORD` — first operator credentials
 
