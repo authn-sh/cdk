@@ -38,13 +38,13 @@ export class AuthnCache extends Construct {
       this.port = ext.port ?? 6379;
       this.authTokenSecret = config.secrets.existingSecretArn
         ? Secret.fromSecretCompleteArn(this, 'ExistingSecret', config.secrets.existingSecretArn)
-        : Secret.fromSecretNameV2(this, 'GeneratedSecret', 'authn-redis-external');
+        : Secret.fromSecretNameV2(this, 'GeneratedSecret', 'authn-valkey-external');
       return;
     }
 
     const sg = new SecurityGroup(this, 'CacheSg', {
       vpc,
-      description: 'Authn ElastiCache security group',
+      description: 'Authn ElastiCache (Valkey) security group',
       allowAllOutbound: false,
     });
 
@@ -54,7 +54,7 @@ export class AuthnCache extends Construct {
     });
 
     const authToken = new Secret(this, 'AuthToken', {
-      secretName: 'authn/redis-auth',
+      secretName: 'authn/valkey-auth',
       generateSecretString: {
         passwordLength: 32,
         excludePunctuation: true,
@@ -62,10 +62,10 @@ export class AuthnCache extends Construct {
       },
     });
 
-    const replication = new CfnReplicationGroup(this, 'Redis', {
-      replicationGroupDescription: 'Authn Redis',
-      engine: 'redis',
-      engineVersion: '7.1',
+    const replication = new CfnReplicationGroup(this, 'Valkey', {
+      replicationGroupDescription: 'Authn Valkey',
+      engine: 'valkey',
+      engineVersion: '8.0',
       cacheNodeType: config.cache.nodeType,
       numNodeGroups: 1,
       replicasPerNodeGroup: config.cache.multiAz ? 1 : 0,
@@ -90,7 +90,7 @@ export class AuthnCache extends Construct {
 
   public allowFrom(other: SecurityGroup): void {
     if (this.securityGroup) {
-      this.securityGroup.addIngressRule(other, Port.tcp(this.port), 'authn app -> redis');
+      this.securityGroup.addIngressRule(other, Port.tcp(this.port), 'authn app -> valkey');
     }
   }
 }

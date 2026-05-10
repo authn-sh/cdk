@@ -2,7 +2,7 @@
 
 AWS CDK constructs for deploying [authn.sh](https://authn.sh) on AWS. Sibling project to the [Helm chart](https://github.com/authn-sh/helm).
 
-Pulls `ghcr.io/authn-sh/authn:0.3.0` by default and ships with a reference single-account stack — VPC, RDS Postgres (Multi-AZ), ElastiCache Redis, ECS Fargate (ARM64) for `web` / `worker` / `scheduler`, internal ALB, ACM, optional CloudFront + WAF.
+Pulls `ghcr.io/authn-sh/authn:0.3.0` by default and ships with a reference single-account stack — VPC, RDS Postgres (Multi-AZ), ElastiCache for Valkey (Redis-protocol-compatible), ECS Fargate (ARM64) for `web` / `worker` / `scheduler`, internal ALB, ACM, optional CloudFront + WAF.
 
 ## Install
 

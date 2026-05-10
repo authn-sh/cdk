@@ -10,7 +10,7 @@ Initial release. Feature parity with the [authn.sh Helm chart](https://github.co
 - Constructs:
   - `AuthnNetwork` — VPC across 3 AZs with public / private / isolated subnets and Interface + Gateway VPC endpoints.
   - `AuthnDatabase` — RDS PostgreSQL 16 (Multi-AZ encrypted) or external endpoint.
-  - `AuthnCache` — ElastiCache Redis 7 (replication group with encryption + AUTH) or external endpoint.
+  - `AuthnCache` — ElastiCache for Valkey 8.0 (replication group with encryption + AUTH; Redis-protocol-compatible so `phpredis` and `REDIS_*` env vars work unchanged) or external endpoint.
   - `AuthnCompute` — ECS Fargate (ARM64) with `web` / `worker` / `scheduler` services and a one-shot `bootstrap` task; internal ALB target.
   - `AuthnEdge` — internal ALB, ACM cert, optional CloudFront, optional WAF; driver-aware (`cloudfront-saas`, `cloudflare-saas`, `manual`, `null`).
   - `AuthnObservability` — CloudWatch log groups, baseline alarms.

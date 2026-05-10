@@ -60,7 +60,7 @@ export class AuthnSingleAccountStack extends Stack {
       database.securityGroup.addIngressRule(compute.serviceSecurityGroup, Port.tcp(database.port), 'authn app -> rds');
     }
     if (cache.securityGroup) {
-      cache.securityGroup.addIngressRule(compute.serviceSecurityGroup, Port.tcp(cache.port), 'authn app -> redis');
+      cache.securityGroup.addIngressRule(compute.serviceSecurityGroup, Port.tcp(cache.port), 'authn app -> valkey');
     }
 
     const edge = new AuthnEdge(this, 'Edge', {
