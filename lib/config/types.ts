@@ -129,6 +129,28 @@ export interface ProbesConfig {
   readonly readinessPath?: string;
 }
 
+export type SmsDriver = 'twilio' | 'vonage' | 'null';
+
+export interface SmsTwilioConfig {
+  readonly accountSid?: string;
+  readonly authTokenSecretArn?: string;
+  readonly fromNumber?: string;
+  readonly messagingServiceSid?: string;
+}
+
+export interface SmsVonageConfig {
+  readonly apiKey?: string;
+  readonly apiSecretSecretArn?: string;
+  readonly fromNumber?: string;
+}
+
+export interface SmsConfig {
+  readonly driver?: SmsDriver;
+  readonly fromNumber?: string;
+  readonly twilio?: SmsTwilioConfig;
+  readonly vonage?: SmsVonageConfig;
+}
+
 export interface AuthnAwsConfig {
   readonly appUrl: string;
   readonly routingMode?: RoutingMode;
@@ -151,6 +173,7 @@ export interface AuthnAwsConfig {
   readonly observability?: ObservabilityConfig;
   readonly network?: NetworkConfig;
   readonly probes?: ProbesConfig;
+  readonly sms?: SmsConfig;
 }
 
 export interface ResolvedTaskResources {
@@ -256,6 +279,13 @@ export interface ResolvedProbesConfig {
   readonly readinessPath: string;
 }
 
+export interface ResolvedSmsConfig {
+  readonly driver: SmsDriver;
+  readonly fromNumber?: string;
+  readonly twilio?: SmsTwilioConfig;
+  readonly vonage?: SmsVonageConfig;
+}
+
 export interface ResolvedAuthnAwsConfig {
   readonly appUrl: string;
   readonly routingMode: RoutingMode;
@@ -278,4 +308,5 @@ export interface ResolvedAuthnAwsConfig {
   readonly observability: ResolvedObservabilityConfig;
   readonly network: ResolvedNetworkConfig;
   readonly probes: ResolvedProbesConfig;
+  readonly sms: ResolvedSmsConfig;
 }

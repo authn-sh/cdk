@@ -61,3 +61,18 @@ network:
   vpcCidr: 10.0.0.0/16
   maxAzs: 3
   natGateways: 1
+
+# SMS engine (v0.4+). Driver defaults to "null" — set to "twilio" or "vonage"
+# to dispatch real verification codes for phone-number sign-up and the
+# phone_code second factor. Auth-token / api-secret are referenced via
+# Secrets Manager ARNs and surfaced as ECS secrets on web + worker.
+#
+# sms:
+#   driver: twilio
+#   fromNumber: "+15551234567"
+#   twilio:
+#     accountSid: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#     authTokenSecretArn: arn:aws:secretsmanager:us-east-1:123456789012:secret:authn-twilio-AbCdEf
+#     messagingServiceSid: MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+sms:
+  driver: "null"
