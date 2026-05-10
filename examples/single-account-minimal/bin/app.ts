@@ -4,13 +4,10 @@ import { AuthnSingleAccountStack, loadConfig } from '@authn-sh/cdk';
 
 const app = new App();
 
-const account = app.node.tryGetContext('account')
-  ?? process.env.CDK_DEFAULT_ACCOUNT;
-const region = app.node.tryGetContext('region')
-  ?? process.env.CDK_DEFAULT_REGION
-  ?? 'us-east-1';
+const account = app.node.tryGetContext('account') ?? process.env.CDK_DEFAULT_ACCOUNT;
+const region = app.node.tryGetContext('region') ?? process.env.CDK_DEFAULT_REGION;
 
 new AuthnSingleAccountStack(app, 'Authn', {
-  env: { account, region },
+  ...(account && region ? { env: { account, region } } : {}),
   config: loadConfig('./authn.config.yaml'),
 });

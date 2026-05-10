@@ -36,4 +36,4 @@ jobs:
         working-directory: examples/single-account-minimal
         run: |
           npm install
-          npx cdk synth --context account=123456789012 --context region=us-east-1 > /dev/null
+          npx cdk synth > /dev/null
