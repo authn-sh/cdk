@@ -1,0 +1,62 @@
+{
+  "name": "@authn-sh/cdk",
+  "version": "0.3.0",
+  "description": "AWS CDK constructs for deploying authn.sh on AWS. Self-hosted authentication-as-a-service.",
+  "license": "AGPL-3.0-only",
+  "homepage": "https://authn.sh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/authn-sh/cdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/authn-sh/cdk/issues"
+  },
+  "keywords": [
+    "authn",
+    "authentication",
+    "identity",
+    "sso",
+    "jwt",
+    "aws",
+    "cdk",
+    "constructs",
+    "ecs",
+    "fargate"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "watch": "tsc -p tsconfig.build.json --watch",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.160.0",
+    "constructs": "^10.4.0"
+  },
+  "dependencies": {
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "@types/node": "^20.16.10",
+    "aws-cdk-lib": "^2.160.0",
+    "constructs": "^10.4.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

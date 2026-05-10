@@ -1,0 +1,63 @@
+appUrl: https://authn.example.com
+routingMode: subdomain
+defaultFromEmail: no-reply@authn.example.com
+
+image:
+  repository: ghcr.io/authn-sh/authn
+  tag: "0.3.0"
+
+replicaCount:
+  web: 2
+  worker: 1
+
+env:
+  MAIL_HOST: email-smtp.us-east-1.amazonaws.com
+  MAIL_PORT: "587"
+  MAIL_FROM_NAME: authn.sh
+
+secrets:
+  values:
+    APP_KEY: ""
+    AUTHN_BOOTSTRAP_ADMIN_EMAIL: op@example.com
+    AUTHN_BOOTSTRAP_ADMIN_PASSWORD: change-me-please
+    AUTHN_BOOTSTRAP_WORKSPACE_NAME: My workspace
+    MAIL_PASSWORD: ""
+
+database:
+  enabled: true
+  instanceClass: t4g
+  instanceSize: small
+  multiAz: true
+  storageGb: 20
+
+cache:
+  enabled: true
+  nodeType: cache.t4g.micro
+  multiAz: true
+
+edge:
+  hostedZoneId: ""
+  hostedZoneName: ""
+  cloudFront: true
+  customDomainDriver: manual
+  waf: true
+
+bootstrap:
+  enabled: true
+
+scheduler:
+  enabled: true
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+
+observability:
+  logRetentionDays: 90
+  alarmEmail: ""
+
+network:
+  vpcCidr: 10.0.0.0/16
+  maxAzs: 3
+  natGateways: 1

@@ -1,0 +1,14 @@
+node_modules/
+cdk.out/
+.cdk.staging/
+coverage/
+.nyc_output/
+examples/
+test/
+.github/
+.editorconfig
+.nvmrc
+.gitignore
+tsconfig.json
+tsconfig.build.json
+jest.config.js
