@@ -26,18 +26,6 @@ jobs:
           node --version
           npm --version
 
-      - name: Ensure npm CLI >= 11.5.1 (required for trusted publishing OIDC)
-        run: |
-          current=$(npm --version)
-          required=11.5.1
-          if [ "$(printf '%s\n' "$required" "$current" | sort -V | head -n1)" != "$required" ]; then
-            echo "npm $current is below required $required; upgrading"
-            npm install -g --force "npm@>=11.5.1"
-            npm --version
-          else
-            echo "npm $current already meets required $required"
-          fi
-
       - run: npm ci
       - run: npm run build
       - run: npm test --if-present
