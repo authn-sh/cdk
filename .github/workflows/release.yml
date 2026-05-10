@@ -3,7 +3,6 @@ name: release
 on:
   push:
     tags: ['v*.*.*']
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -35,7 +34,30 @@ jobs:
             exit 1
           fi
 
-      - name: Publish to npm
+      - name: Publish to npm (trusted publishing via OIDC)
         run: npm publish --provenance --access public
+
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        run: |
+          set -eu
+          tag="${GITHUB_REF_NAME#v}"
+          awk -v tag="$tag" '
+            /^## / {
+              if (in_section) exit
+              if ($2 == tag) { in_section = 1; next }
+            }
+            in_section { print }
+          ' CHANGELOG.md > /tmp/release-notes.md
+          if [ ! -s /tmp/release-notes.md ]; then
+            echo "Release ${GITHUB_REF_NAME}." > /tmp/release-notes.md
+          fi
+          echo "path=/tmp/release-notes.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "${{ steps.notes.outputs.path }}"
