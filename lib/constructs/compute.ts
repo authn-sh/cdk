@@ -77,7 +77,7 @@ export class AuthnCompute extends Construct {
       REDIS_CLIENT: 'phpredis',
       REDIS_HOST: props.redisHost,
       REDIS_PORT: String(props.redisPort),
-      ...(config.env as Record<string, string>),
+      ...(config.env as unknown as Record<string, string>),
       ...config.extraEnv,
     };
 
@@ -102,8 +102,8 @@ export class AuthnCompute extends Construct {
     };
 
     const webTd = new FargateTaskDefinition(this, 'WebTd', {
-      cpu: config.resources.web.cpu!,
-      memoryLimitMiB: config.resources.web.memoryMib!,
+      cpu: config.resources.web.cpu,
+      memoryLimitMiB: config.resources.web.memoryMib,
       runtimePlatform: runtime,
     });
     webTd.addContainer('app', {
@@ -136,17 +136,17 @@ export class AuthnCompute extends Construct {
 
     if (config.autoscaling.enabled) {
       const scaling = this.webService.autoScaleTaskCount({
-        minCapacity: config.autoscaling.minReplicas!,
-        maxCapacity: config.autoscaling.maxReplicas!,
+        minCapacity: config.autoscaling.minReplicas,
+        maxCapacity: config.autoscaling.maxReplicas,
       });
       scaling.scaleOnCpuUtilization('CpuScaling', {
-        targetUtilizationPercent: config.autoscaling.targetCpuUtilization!,
+        targetUtilizationPercent: config.autoscaling.targetCpuUtilization,
       });
     }
 
     const workerTd = new FargateTaskDefinition(this, 'WorkerTd', {
-      cpu: config.resources.worker.cpu!,
-      memoryLimitMiB: config.resources.worker.memoryMib!,
+      cpu: config.resources.worker.cpu,
+      memoryLimitMiB: config.resources.worker.memoryMib,
       runtimePlatform: runtime,
     });
     workerTd.addContainer('worker', {
@@ -172,8 +172,8 @@ export class AuthnCompute extends Construct {
 
     if (config.scheduler.enabled) {
       const schedulerTd = new FargateTaskDefinition(this, 'SchedulerTd', {
-        cpu: config.resources.scheduler.cpu!,
-        memoryLimitMiB: config.resources.scheduler.memoryMib!,
+        cpu: config.resources.scheduler.cpu,
+        memoryLimitMiB: config.resources.scheduler.memoryMib,
         runtimePlatform: runtime,
       });
       schedulerTd.addContainer('scheduler', {
@@ -199,8 +199,8 @@ export class AuthnCompute extends Construct {
 
     if (config.bootstrap.enabled) {
       const td = new FargateTaskDefinition(this, 'BootstrapTd', {
-        cpu: config.resources.bootstrap.cpu!,
-        memoryLimitMiB: config.resources.bootstrap.memoryMib!,
+        cpu: config.resources.bootstrap.cpu,
+        memoryLimitMiB: config.resources.bootstrap.memoryMib,
         runtimePlatform: runtime,
       });
       td.addContainer('bootstrap', {
