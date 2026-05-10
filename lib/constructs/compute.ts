@@ -18,8 +18,8 @@ import {
   Secret as EcsSecret,
 } from 'aws-cdk-lib/aws-ecs';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { ResolvedAuthnAwsConfig } from '../config/types';
+import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { ResolvedAuthnAwsConfig, ResolvedSmsConfig } from '../config/types';
 
 export interface AuthnComputeProps {
   readonly vpc: IVpc;
@@ -64,6 +64,9 @@ export class AuthnCompute extends Construct {
       `${config.image.repository}:${config.image.tag}`,
     );
 
+    const smsEnv = AuthnCompute.smsEnv(config.sms);
+    const smsSecrets = this.smsSecrets(config.sms);
+
     const baseEnv: Record<string, string> = {
       AUTHN_APP_URL: config.appUrl,
       APP_URL: config.appUrl,
@@ -88,6 +91,11 @@ export class AuthnCompute extends Construct {
       MAIL_PASSWORD: EcsSecret.fromSecretsManager(appSecret, 'MAIL_PASSWORD'),
     };
 
+    // SMS dispatch happens on web (verification challenges) and worker
+    // (queued retries) — scheduler doesn't send SMS, so leave it out.
+    const smsAwareEnv = { ...baseEnv, ...smsEnv };
+    const smsAwareSecrets = { ...baseSecrets, ...smsSecrets };
+
     const retention = this.toLogRetention(config.observability.logRetentionDays);
     const stackName = Stack.of(this).stackName;
 
@@ -109,8 +117,8 @@ export class AuthnCompute extends Construct {
     webTd.addContainer('app', {
       image,
       essential: true,
-      environment: { ...baseEnv, AUTHN_RUN_MIGRATIONS: 'true' },
-      secrets: baseSecrets,
+      environment: { ...smsAwareEnv, AUTHN_RUN_MIGRATIONS: 'true' },
+      secrets: smsAwareSecrets,
       portMappings: [{ containerPort: 8080 }],
       logging: LogDriver.awsLogs({ streamPrefix: 'web', logGroup: webLog }),
       healthCheck: {
@@ -155,8 +163,8 @@ export class AuthnCompute extends Construct {
       command: ['php', 'artisan', 'queue:work',
         '--queue=default,webhooks,mail',
         '--tries=3', '--max-time=3600', '--sleep=1', '--backoff=10'],
-      environment: baseEnv,
-      secrets: baseSecrets,
+      environment: smsAwareEnv,
+      secrets: smsAwareSecrets,
       logging: LogDriver.awsLogs({ streamPrefix: 'worker', logGroup: workerLog }),
     });
     this.workerService = new FargateService(this, 'WorkerSvc', {
@@ -228,6 +236,37 @@ export class AuthnCompute extends Construct {
 
   public allowEgressToPort(target: SecurityGroup, port: Port, description: string): void {
     this.serviceSecurityGroup.addEgressRule(target, port, description);
+  }
+
+  private static smsEnv(sms: ResolvedSmsConfig): Record<string, string> {
+    const env: Record<string, string> = { AUTHN_SMS_DRIVER: sms.driver };
+    if (sms.driver === 'null') return env;
+    if (sms.fromNumber) env.AUTHN_SMS_FROM_NUMBER = sms.fromNumber;
+    if (sms.driver === 'twilio') {
+      const t = sms.twilio ?? {};
+      if (t.accountSid) env.AUTHN_SMS_TWILIO_ACCOUNT_SID = t.accountSid;
+      if (t.fromNumber) env.AUTHN_SMS_TWILIO_FROM_NUMBER = t.fromNumber;
+      if (t.messagingServiceSid) env.AUTHN_SMS_TWILIO_MESSAGING_SERVICE_SID = t.messagingServiceSid;
+    }
+    if (sms.driver === 'vonage') {
+      const v = sms.vonage ?? {};
+      if (v.apiKey) env.AUTHN_SMS_VONAGE_API_KEY = v.apiKey;
+      if (v.fromNumber) env.AUTHN_SMS_VONAGE_FROM_NUMBER = v.fromNumber;
+    }
+    return env;
+  }
+
+  private smsSecrets(sms: ResolvedSmsConfig): Record<string, EcsSecret> {
+    const out: Record<string, EcsSecret> = {};
+    if (sms.driver === 'twilio' && sms.twilio?.authTokenSecretArn) {
+      const sec = Secret.fromSecretCompleteArn(this, 'TwilioAuthToken', sms.twilio.authTokenSecretArn);
+      out.AUTHN_SMS_TWILIO_AUTH_TOKEN = EcsSecret.fromSecretsManager(sec);
+    }
+    if (sms.driver === 'vonage' && sms.vonage?.apiSecretSecretArn) {
+      const sec = Secret.fromSecretCompleteArn(this, 'VonageApiSecret', sms.vonage.apiSecretSecretArn);
+      out.AUTHN_SMS_VONAGE_API_SECRET = EcsSecret.fromSecretsManager(sec);
+    }
+    return out;
   }
 
   private toLogRetention(days: number): RetentionDays {

@@ -2,7 +2,7 @@
 
 AWS CDK constructs for deploying [authn.sh](https://authn.sh) on AWS. Sibling project to the [Helm chart](https://github.com/authn-sh/helm).
 
-Pulls `ghcr.io/authn-sh/authn:0.3.0` by default and ships with a reference single-account stack — VPC, RDS Postgres (Multi-AZ), ElastiCache for Valkey (Redis-protocol-compatible), ECS Fargate (ARM64) for `web` / `worker` / `scheduler`, internal ALB, ACM, optional CloudFront + WAF.
+Pulls `ghcr.io/authn-sh/authn:0.3.0` by default and ships with a reference single-account stack — VPC, RDS Postgres (Multi-AZ), ElastiCache for Valkey (Redis-protocol-compatible), ECS Fargate (ARM64) for `web` / `worker` / `scheduler`, internal ALB, ACM, optional CloudFront + WAF. The default tag rolls forward to `0.4.0` once the stable v0.4.0 application image is cut; pass `image.tag` explicitly to pin a specific (e.g. alpha) build.
 
 ## Install
 
@@ -116,6 +116,22 @@ secrets:
 ```
 
 ECS task definitions reference the secret via the `secrets:` block — values never appear in env vars or stack outputs.
+
+## SMS
+
+v0.4 introduces an SMS engine for phone-number verification and the `phone_code` second factor. The construct exposes a typed `sms` block:
+
+```yaml
+sms:
+  driver: twilio   # or "vonage" / "null" (default)
+  fromNumber: "+15551234567"
+  twilio:
+    accountSid: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    authTokenSecretArn: arn:aws:secretsmanager:us-east-1:123456789012:secret:authn-twilio-AbCdEf
+    messagingServiceSid: MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+The `*SecretArn` fields point at AWS Secrets Manager secrets — the construct wires them onto the `web` + `worker` task definitions as ECS secrets. The `scheduler` doesn't dispatch SMS, so it's left out. Per-environment overrides still go through the BAPI `Environment.sms.*` config at runtime.
 
 ## Custom domains
 

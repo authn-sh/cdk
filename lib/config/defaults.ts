@@ -3,6 +3,9 @@ import {
   ResolvedAuthnAwsConfig,
 } from './types';
 
+// Default container image tag. Stays at 0.3.0 (the most recent stable) until
+// the cross-repo v0.4.0 stable cut publishes ghcr.io/authn-sh/authn:0.4.0.
+// Operators wanting an alpha can pass image.tag = '0.4.0-alpha.N' explicitly.
 export const CHART_VERSION = '0.3.0';
 
 export function applyDefaults(input: AuthnAwsConfig): ResolvedAuthnAwsConfig {
@@ -132,6 +135,13 @@ export function applyDefaults(input: AuthnAwsConfig): ResolvedAuthnAwsConfig {
     probes: {
       livenessPath: input.probes?.livenessPath ?? '/up',
       readinessPath: input.probes?.readinessPath ?? '/up',
+    },
+
+    sms: {
+      driver: input.sms?.driver ?? 'null',
+      fromNumber: input.sms?.fromNumber,
+      twilio: input.sms?.twilio,
+      vonage: input.sms?.vonage,
     },
   };
 }

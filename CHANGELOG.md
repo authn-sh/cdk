@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0
+
+Tracks the v0.4 authn application surface (OAuth social sign-in, phone numbers, SMS engine + drivers, `phone_code` second factor, BAPI `/v1/sms-templates`).
+
+### Added
+
+- `AuthnAwsConfig.sms` — typed configuration block for the SMS engine. Fields:
+  - `driver`: `"twilio" | "vonage" | "null"` (default `"null"`).
+  - `fromNumber`: optional global default originator.
+  - `twilio`: `{ accountSid, authTokenSecretArn, fromNumber, messagingServiceSid }` — `authTokenSecretArn` references a Secrets Manager secret.
+  - `vonage`: `{ apiKey, apiSecretSecretArn, fromNumber }` — `apiSecretSecretArn` references a Secrets Manager secret.
+- `AuthnCompute` now emits the matching `AUTHN_SMS_*` env vars + Secrets Manager-backed secrets onto the `web` + `worker` task definitions. The `scheduler` task definition is left alone (it doesn't dispatch SMS).
+- Same `sms` block accepted by the YAML loader (`loadConfig`); see `examples/single-account-minimal/authn.config.yaml`.
+
+### Changed
+
+- `package.json` `version` bumped to `0.4.0`.
+- Default container image tag stays at `0.3.0` for now; the v0.4.0 application image is published as `0.4.0-alpha.N` during cross-repo integration. The default rolls forward once the stable `ghcr.io/authn-sh/authn:0.4.0` tag is cut. Operators wanting the alpha can pass `image.tag: 0.4.0-alpha.N` explicitly.
+
 ## 0.3.1
 
 ### Added
