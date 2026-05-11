@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.5.0
+
+Tracks the v0.5 authn application surface (Passkeys / WebAuthn, server-side Appearance + Localization, six new OAuth presets: Discord / Facebook / LinkedIn / X / GitLab / Slack).
+
+### Changed
+
+- `package.json` `version` bumped to `0.5.0`.
+- Default container image tag (`CHART_VERSION` in `lib/config/defaults.ts`) rolled forward to `0.5.0` — `ghcr.io/authn-sh/authn:0.5.0` ships alongside this release.
+- README "Compatibility" table now includes a row for `0.5.x`.
+- `examples/single-account-minimal/` re-pinned to `@authn-sh/cdk@0.5.0` with `image.tag: "0.5.0"` so a clean `cdk synth` from the example tracks current.
+
+### Notes
+
+No `AuthnAwsConfig` / `AuthnCompute` API changes. v0.5 needs no new env vars to surface from the construct:
+
+- Passkeys derive the WebAuthn RP-ID from each environment's FAPI host at request time — no synth-time configuration required.
+- Appearance and localization blobs are stored in Postgres and edited from the dashboard — they're not provisioned through CDK.
+- The six new OAuth presets are configured per-environment through the BAPI `/v1/oauth-providers` surface (same wiring as the v0.4 presets) — no construct change.
+
 ## 0.4.1
 
 Fix: `CHART_VERSION` (the default container image tag emitted by `AuthnCompute`) rolls forward to `0.4.0`. The published `@authn-sh/cdk@0.4.0` tarball was cut from an older commit and shipped with `CHART_VERSION = '0.3.0'` baked in; this patch ships the bumped value.
