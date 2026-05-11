@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+Fix: `CHART_VERSION` (the default container image tag emitted by `AuthnCompute`) rolls forward to `0.4.0`. The published `@authn-sh/cdk@0.4.0` tarball was cut from an older commit and shipped with `CHART_VERSION = '0.3.0'` baked in; this patch ships the bumped value.
+
 ## 0.4.0
 
 Tracks the v0.4 authn application surface (OAuth social sign-in, phone numbers, SMS engine + drivers, `phone_code` second factor, BAPI `/v1/sms-templates`).
