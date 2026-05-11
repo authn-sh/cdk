@@ -3,10 +3,8 @@ import {
   ResolvedAuthnAwsConfig,
 } from './types';
 
-// Default container image tag. Stays at 0.3.0 (the most recent stable) until
-// the cross-repo v0.4.0 stable cut publishes ghcr.io/authn-sh/authn:0.4.0.
-// Operators wanting an alpha can pass image.tag = '0.4.0-alpha.N' explicitly.
-export const CHART_VERSION = '0.3.0';
+// Default container image tag. Tracks the most recent stable authn.sh release.
+export const CHART_VERSION = '0.4.0';
 
 export function applyDefaults(input: AuthnAwsConfig): ResolvedAuthnAwsConfig {
   if (!input.appUrl) {

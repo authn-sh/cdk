@@ -17,7 +17,7 @@ Tracks the v0.4 authn application surface (OAuth social sign-in, phone numbers, 
 ### Changed
 
 - `package.json` `version` bumped to `0.4.0`.
-- Default container image tag stays at `0.3.0` for now; the v0.4.0 application image is published as `0.4.0-alpha.N` during cross-repo integration. The default rolls forward once the stable `ghcr.io/authn-sh/authn:0.4.0` tag is cut. Operators wanting the alpha can pass `image.tag: 0.4.0-alpha.N` explicitly.
+- Default container image tag rolled forward to `0.4.0` — `ghcr.io/authn-sh/authn:0.4.0` ships alongside this release.
 
 ## 0.3.1
 
