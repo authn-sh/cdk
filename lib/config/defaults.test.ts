@@ -21,7 +21,7 @@ describe('applyDefaults', () => {
     const c = applyDefaults(minimal);
     expect(c.routingMode).toBe('subdomain');
     expect(c.image.repository).toBe('ghcr.io/authn-sh/authn');
-    expect(c.image.tag).toBe('0.3.0');
+    expect(c.image.tag).toBe('0.4.0');
     expect(c.replicaCount.web).toBe(2);
     expect(c.replicaCount.worker).toBe(1);
     expect(c.cache.nodeType).toBe('cache.t4g.micro');
