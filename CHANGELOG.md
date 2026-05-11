@@ -9,7 +9,7 @@ Tracks the v0.5 authn application surface (Passkeys / WebAuthn, server-side Appe
 - `package.json` `version` bumped to `0.5.0`.
 - Default container image tag (`CHART_VERSION` in `lib/config/defaults.ts`) rolled forward to `0.5.0` — `ghcr.io/authn-sh/authn:0.5.0` ships alongside this release.
 - README "Compatibility" table now includes a row for `0.5.x`.
-- `examples/single-account-minimal/` re-pinned to `@authn-sh/cdk@0.5.0` with `image.tag: "0.5.0"` so a clean `cdk synth` from the example tracks current.
+- `examples/single-account-minimal/authn.config.yaml` `image.tag` bumped to `"0.5.0"` so a clean `cdk synth` from the example pulls the v0.5 server image. The `@authn-sh/cdk` dep in the example stays on the most recent published version until the release-dance tag publishes `0.5.0`.
 
 ### Notes
 
