@@ -4,7 +4,7 @@ import {
 } from './types';
 
 // Default container image tag. Tracks the most recent stable authn.sh release.
-export const CHART_VERSION = '0.4.0';
+export const CHART_VERSION = '0.5.0';
 
 export function applyDefaults(input: AuthnAwsConfig): ResolvedAuthnAwsConfig {
   if (!input.appUrl) {

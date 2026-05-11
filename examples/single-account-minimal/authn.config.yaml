@@ -4,7 +4,7 @@ defaultFromEmail: no-reply@authn.example.com
 
 image:
   repository: ghcr.io/authn-sh/authn
-  tag: "0.4.0"
+  tag: "0.5.0"
 
 replicaCount:
   web: 2

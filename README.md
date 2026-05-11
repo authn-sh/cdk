@@ -2,7 +2,15 @@
 
 AWS CDK constructs for deploying [authn.sh](https://authn.sh) on AWS. Sibling project to the [Helm chart](https://github.com/authn-sh/helm).
 
-Pulls `ghcr.io/authn-sh/authn:0.3.0` by default and ships with a reference single-account stack — VPC, RDS Postgres (Multi-AZ), ElastiCache for Valkey (Redis-protocol-compatible), ECS Fargate (ARM64) for `web` / `worker` / `scheduler`, internal ALB, ACM, optional CloudFront + WAF. The default tag rolls forward to `0.4.0` once the stable v0.4.0 application image is cut; pass `image.tag` explicitly to pin a specific (e.g. alpha) build.
+Pulls `ghcr.io/authn-sh/authn:0.5.0` by default and ships with a reference single-account stack — VPC, RDS Postgres (Multi-AZ), ElastiCache for Valkey (Redis-protocol-compatible), ECS Fargate (ARM64) for `web` / `worker` / `scheduler`, internal ALB, ACM, optional CloudFront + WAF. Pass `image.tag` explicitly to pin a specific (e.g. alpha) build.
+
+## Compatibility
+
+| `@authn-sh/cdk` | Default `image.tag` | Chart parity | authn server release |
+|---|---|---|---|
+| `0.5.x` | `0.5.0` | `authn-sh/helm@0.5.0` | v0.5 (Passkeys, Appearance, Localization, six new OAuth presets) |
+| `0.4.x` | `0.4.0` | `authn-sh/helm@0.4.0` | v0.4 (OAuth social sign-in, phone numbers, SMS engine, `phone_code` 2FA) |
+| `0.3.x` | `0.3.0` | `authn-sh/helm@0.3.0` | v0.3 (MFA: TOTP + backup codes) |
 
 ## Install
 
