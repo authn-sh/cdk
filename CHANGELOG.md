@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.6.0
+
+Tracks the v0.6 authn application surface (Enterprise SSO — unified SAML + OIDC connection model, SCIM 2.0 directory sync, verified-domain sign-in routing).
+
+### Added
+
+- Typed `enterpriseSso` config block on `AuthnAwsConfig`:
+  ```typescript
+  export interface EnterpriseSsoConfig {
+    samlSpSigningKeySecretArn?: string;
+  }
+  ```
+  When set, the construct wires the SecretsManager secret into every ECS task definition as the `AUTHN_SAML_SP_SIGNING_KEY_B64` env via `Secret.fromSecretsManager`. The secret value is a base64-encoded PEM private key the server uses to sign outbound SAML AuthnRequests. Both the block and its single field are optional — connections without a configured SP signing key skip signing, which most IdPs accept. Per-connection `EnterpriseConnection.saml_signing_key` (encrypted on the application-side row) takes precedence over the env-var fallback when both are set.
+- README **Enterprise SSO** section documents the `enterpriseSso.samlSpSigningKeySecretArn` config block alongside the existing SMS section and explains the precedence rule.
+
+### Changed
+
+- `package.json` `version` bumped to `0.6.0`.
+- Default container image tag (`CHART_VERSION` in `lib/config/defaults.ts`) rolled forward to `0.6.0` — `ghcr.io/authn-sh/authn:0.6.0` ships alongside this release.
+- README "Compatibility" table now includes a row for `0.6.x`.
+- `examples/single-account-minimal/authn.config.yaml` `image.tag` bumped to `"0.6.0"` so a clean `cdk synth` from the example pulls the v0.6 server image. The `@authn-sh/cdk` dep in the example stays on the most recent published version (`0.5.0`) until the release-dance tag publishes `0.6.0` — a follow-up bumps the example dep after CK-1 tags.
+
+### Notes
+
+The new v0.6 BAPI / FAPI / SCIM endpoint surfaces (enterprise-connections CRUD + dry-run probe, scim/v2/Users + Groups, scim/v2/ServiceProviderConfig, organization-scoped scim/tokens + attribute-mappings, SAML ACS + metadata + OIDC callback) all reuse the existing FAPI ingress — no new ALB target groups, listener rules, or DNS records required. Existing 0.5.x deployments upgrade cleanly with just the image tag bump.
+
 ## 0.5.0
 
 Tracks the v0.5 authn application surface (Passkeys / WebAuthn, server-side Appearance + Localization, six new OAuth presets: Discord / Facebook / LinkedIn / X / GitLab / Slack).

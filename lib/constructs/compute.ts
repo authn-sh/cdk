@@ -91,6 +91,15 @@ export class AuthnCompute extends Construct {
       MAIL_PASSWORD: EcsSecret.fromSecretsManager(appSecret, 'MAIL_PASSWORD'),
     };
 
+    if (config.enterpriseSso.samlSpSigningKeySecretArn) {
+      const sec = Secret.fromSecretCompleteArn(
+        this,
+        'SamlSpSigningKey',
+        config.enterpriseSso.samlSpSigningKeySecretArn,
+      );
+      baseSecrets.AUTHN_SAML_SP_SIGNING_KEY_B64 = EcsSecret.fromSecretsManager(sec);
+    }
+
     // SMS dispatch happens on web (verification challenges) and worker
     // (queued retries) — scheduler doesn't send SMS, so leave it out.
     const smsAwareEnv = { ...baseEnv, ...smsEnv };
