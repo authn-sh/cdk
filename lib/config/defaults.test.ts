@@ -21,7 +21,7 @@ describe('applyDefaults', () => {
     const c = applyDefaults(minimal);
     expect(c.routingMode).toBe('subdomain');
     expect(c.image.repository).toBe('ghcr.io/authn-sh/authn');
-    expect(c.image.tag).toBe('0.5.0');
+    expect(c.image.tag).toBe('0.6.0');
     expect(c.replicaCount.web).toBe(2);
     expect(c.replicaCount.worker).toBe(1);
     expect(c.cache.nodeType).toBe('cache.t4g.micro');
@@ -72,5 +72,20 @@ describe('applyDefaults', () => {
     expect(c.autoscaling.minReplicas).toBe(2);
     expect(c.autoscaling.maxReplicas).toBe(10);
     expect(c.autoscaling.targetCpuUtilization).toBe(70);
+  });
+
+  it('enterpriseSso defaults to an empty block', () => {
+    const c = applyDefaults(minimal);
+    expect(c.enterpriseSso.samlSpSigningKeySecretArn).toBeUndefined();
+  });
+
+  it('enterpriseSso.samlSpSigningKeySecretArn passes through', () => {
+    const arn =
+      'arn:aws:secretsmanager:us-east-1:123456789012:secret:authn-saml-sp-signing-AbCdEf';
+    const c = applyDefaults({
+      ...minimal,
+      enterpriseSso: { samlSpSigningKeySecretArn: arn },
+    });
+    expect(c.enterpriseSso.samlSpSigningKeySecretArn).toBe(arn);
   });
 });

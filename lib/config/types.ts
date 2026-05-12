@@ -151,6 +151,20 @@ export interface SmsConfig {
   readonly vonage?: SmsVonageConfig;
 }
 
+export interface EnterpriseSsoConfig {
+  /**
+   * SecretsManager ARN for the SAML SP signing key (PEM, base64-encoded).
+   * Optional — required only if you'll create signed-AuthnRequest connections
+   * on a SAML enterprise IdP that rejects unsigned requests (some Azure AD /
+   * ADFS configurations). When set, the secret is wired into the ECS task
+   * definition as the `AUTHN_SAML_SP_SIGNING_KEY_B64` env (via
+   * `Secret.fromSecretsManager`). Per-connection
+   * `EnterpriseConnection.saml_signing_key` takes precedence over this
+   * instance-wide fallback when both are set.
+   */
+  readonly samlSpSigningKeySecretArn?: string;
+}
+
 export interface AuthnAwsConfig {
   readonly appUrl: string;
   readonly routingMode?: RoutingMode;
@@ -174,6 +188,7 @@ export interface AuthnAwsConfig {
   readonly network?: NetworkConfig;
   readonly probes?: ProbesConfig;
   readonly sms?: SmsConfig;
+  readonly enterpriseSso?: EnterpriseSsoConfig;
 }
 
 export interface ResolvedTaskResources {
@@ -286,6 +301,10 @@ export interface ResolvedSmsConfig {
   readonly vonage?: SmsVonageConfig;
 }
 
+export interface ResolvedEnterpriseSsoConfig {
+  readonly samlSpSigningKeySecretArn?: string;
+}
+
 export interface ResolvedAuthnAwsConfig {
   readonly appUrl: string;
   readonly routingMode: RoutingMode;
@@ -309,4 +328,5 @@ export interface ResolvedAuthnAwsConfig {
   readonly network: ResolvedNetworkConfig;
   readonly probes: ResolvedProbesConfig;
   readonly sms: ResolvedSmsConfig;
+  readonly enterpriseSso: ResolvedEnterpriseSsoConfig;
 }
