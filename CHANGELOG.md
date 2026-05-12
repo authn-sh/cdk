@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.7.0
+
+Tracks the v0.7 authn application surface (OAuth provider mode — the env exposed as an OAuth 2.0 / OIDC identity provider — and JWT templates).
+
+### Changed
+
+- `package.json` `version` bumped to `0.7.0`.
+- Default container image tag (`CHART_VERSION` in `lib/config/defaults.ts`) rolled forward to `0.7.0` — `ghcr.io/authn-sh/authn:0.7.0` ships alongside this release.
+- README "Compatibility" table now includes a row for `0.7.x`.
+- `examples/single-account-minimal/authn.config.yaml` `image.tag` bumped to `"0.7.0"` so a clean `cdk synth` from the example pulls the v0.7 server image. The `@authn-sh/cdk` dep in the example stays on the most recent published version (`0.6.0`) until the release-dance tag publishes `0.7.0` — a follow-up bumps the example dep after CK-1 tags (the same v0.4-bug avoidance pattern v0.5 + v0.6 used).
+
+### Notes
+
+The new v0.7 endpoint surfaces — OAuth provider mode FAPI endpoints (`/oauth/authorize`, `/oauth/token`, `/oauth/userinfo`, `/oauth/token_info`, `/.well-known/openid-configuration`), BAPI `/v1/oauth-applications` + `/v1/jwt-templates` CRUD, BAPI SCIM admin mirror (`/v1/organizations/{org_id}/scim/*`) closing the v0.6 deferral, `/v1/enterprise-accounts` spec backfill, and user-scoped `/v1/me/oauth-authorization-grants` — all reuse the existing FAPI / BAPI ingress and ALB target groups. No new typed config blocks: JWT templates and `OauthApplication` rows are dashboard-driven at runtime, not synth-time, so the construct surface is unchanged. Existing 0.6.x deployments upgrade cleanly with just the image-tag bump.
+
 ## 0.6.0
 
 Tracks the v0.6 authn application surface (Enterprise SSO — unified SAML + OIDC connection model, SCIM 2.0 directory sync, verified-domain sign-in routing).
