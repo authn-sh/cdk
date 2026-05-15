@@ -107,4 +107,49 @@ describe('AuthnSingleAccountStack', () => {
       MaxCapacity: 12,
     }));
   });
+
+  it('opens port 80 on the internet-facing ALB security group', () => {
+    const t = synth();
+    const sgs = t.findResources('AWS::EC2::SecurityGroup');
+    const albSg = Object.entries(sgs).find(([, sg]) =>
+      (sg.Properties?.GroupDescription as string | undefined) === 'Authn internal ALB',
+    );
+    expect(albSg).toBeDefined();
+    const ingress = (albSg![1].Properties?.SecurityGroupIngress ?? []) as Array<Record<string, unknown>>;
+    expect(ingress).toEqual(expect.arrayContaining([
+      expect.objectContaining({ IpProtocol: 'tcp', FromPort: 80, ToPort: 80, CidrIp: '0.0.0.0/0' }),
+      expect.objectContaining({ IpProtocol: 'tcp', FromPort: 80, ToPort: 80, CidrIpv6: '::/0' }),
+    ]));
+  });
+
+  it('does not open port 443 on the ALB when no certificate is issued', () => {
+    const t = synth();
+    const sgs = t.findResources('AWS::EC2::SecurityGroup');
+    const albSg = Object.entries(sgs).find(([, sg]) =>
+      (sg.Properties?.GroupDescription as string | undefined) === 'Authn internal ALB',
+    );
+    const ingress = (albSg![1].Properties?.SecurityGroupIngress ?? []) as Array<Record<string, unknown>>;
+    expect(ingress.some(r => r.FromPort === 443)).toBe(false);
+  });
+
+  it('opens ports 80 and 443 on the ALB when a hosted zone enables TLS', () => {
+    const t = synth({
+      edge: {
+        cloudFront: false,
+        waf: false,
+        hostedZoneId: 'Z123EXAMPLE',
+        hostedZoneName: 'example.com',
+      },
+    });
+    const sgs = t.findResources('AWS::EC2::SecurityGroup');
+    const albSg = Object.entries(sgs).find(([, sg]) =>
+      (sg.Properties?.GroupDescription as string | undefined) === 'Authn internal ALB',
+    );
+    const ingress = (albSg![1].Properties?.SecurityGroupIngress ?? []) as Array<Record<string, unknown>>;
+    expect(ingress).toEqual(expect.arrayContaining([
+      expect.objectContaining({ IpProtocol: 'tcp', FromPort: 80, ToPort: 80, CidrIp: '0.0.0.0/0' }),
+      expect.objectContaining({ IpProtocol: 'tcp', FromPort: 443, ToPort: 443, CidrIp: '0.0.0.0/0' }),
+      expect.objectContaining({ IpProtocol: 'tcp', FromPort: 443, ToPort: 443, CidrIpv6: '::/0' }),
+    ]));
+  });
 });

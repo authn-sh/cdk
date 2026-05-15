@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import {
   IVpc,
+  Peer,
   Port,
   SecurityGroup,
   SubnetType,
@@ -120,6 +121,9 @@ export class AuthnEdge extends Construct {
     }
 
     if (!config.edge.cloudFront) {
+      albSg.addIngressRule(Peer.anyIpv4(), Port.tcp(80), 'public http');
+      albSg.addIngressRule(Peer.anyIpv6(), Port.tcp(80), 'public http (v6)');
+
       this.alb.addListener('Http', {
         port: 80,
         protocol: ApplicationProtocol.HTTP,
@@ -127,6 +131,9 @@ export class AuthnEdge extends Construct {
       });
 
       if (this.certificate) {
+        albSg.addIngressRule(Peer.anyIpv4(), Port.tcp(443), 'public https');
+        albSg.addIngressRule(Peer.anyIpv6(), Port.tcp(443), 'public https (v6)');
+
         this.alb.addListener('Https', {
           port: 443,
           protocol: ApplicationProtocol.HTTPS,
