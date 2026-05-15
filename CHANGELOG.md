@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.1
+
+Patch release: open public ingress on the internet-facing ALB.
+
+### Fixed
+
+- **`AuthnEdge` ALB security group now ships with 80/443 ingress rules (CK-2)** — `internetFacing` is true by default (`edge.cloudFront` defaults to false in `lib/config/defaults.ts`), but the custom `AlbSg` had **zero** inbound rules. CDK only auto-injects 80/443 ingress on managed security groups; the custom SG needed them spelled out. Result: every default-config `cdk deploy` synthesised an internet-facing ALB nobody could reach. The construct now adds ingress on 80 (IPv4 + IPv6) unconditionally and on 443 (IPv4 + IPv6) when an ACM cert is issued from the hosted zone — matching the listener gating a few lines below.
+
+### Changed
+
+- `package.json` `version` bumped to `0.7.1`.
+- Default container image tag (`CHART_VERSION` in `lib/config/defaults.ts`) stays at `0.7.0` — the patch is construct-side only.
+
 ## 0.7.0
 
 Tracks the v0.7 authn application surface (OAuth provider mode — the env exposed as an OAuth 2.0 / OIDC identity provider — and JWT templates).

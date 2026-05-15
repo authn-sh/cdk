@@ -1,6 +1,6 @@
 {
   "name": "@authn-sh/cdk",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "AWS CDK constructs for deploying authn.sh on AWS. Self-hosted authentication-as-a-service.",
   "license": "AGPL-3.0-only",
   "homepage": "https://authn.sh",
